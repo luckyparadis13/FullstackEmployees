@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Employee Details</title>
+  </head>
+  <body>
+    <a href="/">← Back to Employee Directory</a>
+    <h1 id="name">Loading...</h1>
+    <p id="role"></p>
+    <p id="department"></p>
+    <p id="hire-date"></p>
+
+    <script>
+      async function loadEmployee() {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+
+        try {
+          const res = await fetch(`/employees/${id}`);
+          if (!res.ok) throw new Error("Employee not found.");
+          const emp = await res.json();
+
+          document.getElementById("name").textContent = emp.name;
+          document.getElementById("role").textContent = `Role: ${emp.role}`;
+          document.getElementById(
+            "department"
+          ).textContent = `Department: ${emp.department}`;
+          document.getElementById("hire-date").textContent = `Hired: ${new Date(
+            emp.hire_date
+          ).toDateString()}`;
+        } catch (err) {
+          document.body.innerHTML = `<h1>Employee not found.</h1><a href="/">← Back</a>`;
+        }
+      }
+
+      loadEmployee();
+    </script>
+  </body>
+</html>

@@ -45,7 +45,7 @@ describe('"employees" queries', () => {
         name: employee.name,
         birthday: expect.any(Date),
         salary: employee.salary,
-      }),
+      })
     );
   });
 
@@ -62,7 +62,7 @@ describe('"employees" queries', () => {
         name: employee.name,
         birthday: expect.any(Date),
         salary: employee.salary,
-      }),
+      })
     );
   });
 

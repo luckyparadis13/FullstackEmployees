@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Employee Directory</title>
+  </head>
+  <body>
+    <h1>Employee Directory</h1>
+
+    <!-- Search + Sort -->
+    <input id="search" placeholder="Search by name..." />
+    <select id="sort">
+      <option value="">Sort by</option>
+      <option value="name">Name</option>
+      <option value="role">Role</option>
+    </select>
+
+    <!-- Add New Employee -->
+    <form id="employee-form">
+      <input name="name" placeholder="Name" required />
+      <input name="role" placeholder="Role" required />
+      <input name="department" placeholder="Department" />
+      <button type="submit">Add Employee</button>
+    </form>
+
+    <!-- Employee List -->
+    <ul id="employee-list"></ul>
+
+    <script>
+      async function loadEmployees() {
+        const res = await fetch("/employees");
+        let employees = await res.json();
+
+        // Search
+        const search = document.getElementById("search").value.toLowerCase();
+        if (search) {
+          employees = employees.filter((emp) =>
+            emp.name.toLowerCase().includes(search)
+          );
+        }
+
+        // Sort
+        const sort = document.getElementById("sort").value;
+        if (sort) {
+          employees.sort((a, b) => a[sort].localeCompare(b[sort]));
+        }
+
+        // Display List
+        const list = document.getElementById("employee-list");
+        list.innerHTML = "";
+        employees.forEach((emp) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="/employee.html?id=${emp.id}">${emp.name}</a> - ${emp.role} (${emp.department})`;
+          list.appendChild(li);
+        });
+      }
+
+      // Form Submit
+      document
+        .getElementById("employee-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const data = {
+            name: formData.get("name"),
+            role: formData.get("role"),
+            department: formData.get("department"),
+          };
+
+          await fetch("/employees", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          e.target.reset();
+          loadEmployees();
+        });
+
+      // Live Search/Sort
+      document
+        .getElementById("search")
+        .addEventListener("input", loadEmployees);
+      document.getElementById("sort").addEventListener("change", loadEmployees);
+
+      // Load on page open
+      loadEmployees();
+    </script>
+  </body>
+</html>

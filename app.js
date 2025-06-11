@@ -1,5 +1,18 @@
 import express from "express";
-const app = express();
-export default app;
+import path from "path";
+import { fileURLToPath } from "url";
+import employeesRouter from "./api/employees.js";
 
-// TODO: this file!
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const app = express();
+
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public"))); // Serve index.html
+
+app.use("/employees", employeesRouter);
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+export default app;
